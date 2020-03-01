@@ -6,7 +6,20 @@ namespace ChainOfResponsibilityDP
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Manager manager=new Manager();
+            VicePresident vicePresident=new VicePresident();
+            President president=new President();
+            manager.SetSuccessor(vicePresident);
+            vicePresident.SetSuccessor(president);
+
+            Expense expense=new Expense
+            {
+                Detail = "Training",Amount = 1101
+            };
+            manager.HandleExpense(expense);
+
+            
+
         }
     }
 
@@ -18,12 +31,51 @@ namespace ChainOfResponsibilityDP
 
     abstract class ExpenseHandlerBase
     {
-        private ExpenseHandlerBase _successor;
-        public abstract void HandleExpense();
+        protected ExpenseHandlerBase Successor;
+        public abstract void HandleExpense(Expense expense);
 
         public void SetSuccessor(ExpenseHandlerBase successor)
         {
-            _successor = successor;
+            Successor = successor;
+        }
+    }
+
+    class Manager:ExpenseHandlerBase
+    {
+        public override void HandleExpense(Expense expense)
+        {
+            if (expense.Amount<100)
+            {
+                Console.WriteLine("Manager handled the expense!");
+            }
+            else if(Successor!=null)
+            {
+                Successor.HandleExpense(expense);
+            }
+        }
+    }
+    class VicePresident : ExpenseHandlerBase
+    {
+        public override void HandleExpense(Expense expense)
+        {
+            if (expense.Amount > 100 &&  expense.Amount <=1000)
+            {
+                Console.WriteLine("Vice president handled the expense!");
+            }
+            else if (Successor != null)
+            {
+                Successor.HandleExpense(expense);
+            }
+        }
+    }
+    class President : ExpenseHandlerBase
+    {
+        public override void HandleExpense(Expense expense)
+        {
+            if (expense.Amount > 1000 )
+            {
+                Console.WriteLine("President handled the expense!");
+            }
         }
     }
 }
